@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON Generator Tool</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    input, textarea, select { display: block; margin: 0.5rem 0 1rem; width: 100%; max-width: 600px; padding: 0.5rem; }
+    label { font-weight: bold; margin-top: 1rem; }
+    button { padding: 0.5rem 1rem; margin-top: 1rem; }
+    pre, table { background: #f4f4f4; padding: 1rem; margin-top: 2rem; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background-color: #ddd; }
+  </style>
+</head>
+<body>
+  <h1>Structured JSON Generator</h1>
+
+  <form id="dataForm">
+    <label for="r1">R1</label>
+    <input type="text" id="r1" name="r1" required />
+
+    <label for="r2">R2</label>
+    <input type="text" id="r2" name="r2" required />
+
+    <label for="role">Role</label>
+    <input type="text" id="role" name="role" required />
+
+    <label for="industry">Industry</label>
+    <input type="text" id="industry" name="industry" required />
+
+    <label for="focus_area">Focus Area</label>
+    <textarea id="focus_area" name="focus_area" rows="3" required></textarea>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="5" required></textarea>
+
+    <label for="social_level">Social Level (1-4)</label>
+    <input type="number" id="social_level" name="social_level" min="1" max="4" required />
+
+    <label for="logical_level">Logical Level (1-4)</label>
+    <input type="number" id="logical_level" name="logical_level" min="1" max="4" required />
+
+    <label for="numerical_level">Numerical Level (1-4)</label>
+    <input type="number" id="numerical_level" name="numerical_level" min="1" max="4" required />
+
+    <label for="bestfit_insight">Best Fit Insight</label>
+    <textarea id="bestfit_insight" name="bestfit_insight" rows="3" required></textarea>
+
+    <label for="partialfit_ca_insight">Partial Fit CA Insight</label>
+    <textarea id="partialfit_ca_insight" name="partialfit_ca_insight" rows="3" required></textarea>
+
+    <label for="partialfit_interest_insight">Partial Fit Interest Insight</label>
+    <textarea id="partialfit_interest_insight" name="partialfit_interest_insight" rows="3" required></textarea>
+
+    <button type="submit">Add Entry</button>
+  </form>
+
+  <button onclick="downloadJSON()">Download All Entries as JSON</button>
+
+  <h2>All Entries (Table View)</h2>
+  <table id="entryTable">
+    <thead>
+      <tr>
+        <th>R1</th>
+        <th>R2</th>
+        <th>Role</th>
+        <th>Industry</th>
+        <th>Focus Area</th>
+        <th>Description</th>
+        <th>Social</th>
+        <th>Logical</th>
+        <th>Numerical</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const allEntries = [];
+
+    document.getElementById("dataForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const obj = {};
+
+      for (const [key, value] of formData.entries()) {
+        if (["social_level", "logical_level", "numerical_level"].includes(key)) {
+          obj[key] = parseInt(value, 10);
+        } else {
+          obj[key] = value;
+        }
+      }
+
+      allEntries.push(obj);
+      appendToTable(obj);
+      e.target.reset();
+    });
+
+    function appendToTable(entry) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${entry.r1}</td>
+        <td>${entry.r2}</td>
+        <td>${entry.role}</td>
+        <td>${entry.industry}</td>
+        <td>${entry.focus_area}</td>
+        <td>${entry.description}</td>
+        <td>${entry.social_level}</td>
+        <td>${entry.logical_level}</td>
+        <td>${entry.numerical_level}</td>
+      `;
+      document.querySelector("#entryTable tbody").appendChild(row);
+    }
+
+    function downloadJSON() {
+      const blob = new Blob([JSON.stringify(allEntries, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "entries.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
