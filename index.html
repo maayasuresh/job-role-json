@@ -31,6 +31,9 @@
     <label for="industry">Industry</label>
     <input type="text" id="industry" name="industry" required />
 
+    <label for="industry_tag">Industry Tag (comma separated)</label>
+    <input type="text" id="industry_tag" name="industry_tag" />
+
     <label for="focus_area">Focus Area</label>
     <textarea id="focus_area" name="focus_area" rows="3" required></textarea>
 
@@ -45,6 +48,17 @@
 
     <label for="numerical_level">Numerical Level (1-4)</label>
     <input type="number" id="numerical_level" name="numerical_level" min="1" max="4" required />
+
+    <label for="sparkle_code">SPARKLE Code</label>
+    <select id="sparkle_code" name="sparkle_code" required>
+      <option value="S">Strategic</option>
+      <option value="P">People Centered</option>
+      <option value="A">Analytical</option>
+      <option value="R">Relationship</option>
+      <option value="K">Knowledge Driven</option>
+      <option value="L">Logistics and Operational</option>
+      <option value="E">Expressive</option>
+    </select>
 
     <label for="bestfit_insight">Best Fit Insight</label>
     <textarea id="bestfit_insight" name="bestfit_insight" rows="3" required></textarea>
@@ -68,11 +82,13 @@
         <th>R2</th>
         <th>Role</th>
         <th>Industry</th>
+        <th>Tags</th>
         <th>Focus Area</th>
         <th>Description</th>
         <th>Social</th>
         <th>Logical</th>
         <th>Numerical</th>
+        <th>SPARKLE</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -90,6 +106,8 @@
       for (const [key, value] of formData.entries()) {
         if (["social_level", "logical_level", "numerical_level"].includes(key)) {
           obj[key] = parseInt(value, 10);
+        } else if (key === "industry_tag") {
+          obj[key] = value.split(",").map(tag => tag.trim()).filter(Boolean);
         } else {
           obj[key] = value;
         }
@@ -107,11 +125,13 @@
         <td>${entry.r2}</td>
         <td>${entry.role}</td>
         <td>${entry.industry}</td>
+        <td>${entry.industry_tag?.join(", ") || ""}</td>
         <td>${entry.focus_area}</td>
         <td>${entry.description}</td>
         <td>${entry.social_level}</td>
         <td>${entry.logical_level}</td>
         <td>${entry.numerical_level}</td>
+        <td>${entry.sparkle_code}</td>
       `;
       document.querySelector("#entryTable tbody").appendChild(row);
     }
